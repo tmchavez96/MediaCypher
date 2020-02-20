@@ -9,8 +9,26 @@
 import Foundation
 
 
+protocol mediaDelegate: class {
+    func updateUI()
+}
+
 class ViewModel {
     
-    var content = [Content]()
+    var content:[Content] = []{
+        didSet {
+            delegate?.updateUI()
+        }
+    }
     
+    weak var delegate: mediaDelegate?
+    
+    init(){
+        //CoreManager.shared.deleteAllContent()
+        reloadContent()
+    }
+    
+    func reloadContent(){
+        content = CoreManager.shared.loadAllContent()
+    }
 }

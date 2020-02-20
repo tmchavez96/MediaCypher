@@ -10,10 +10,13 @@ import Foundation
 import CoreData
 
 
-class CoreManager {
+final class CoreManager {
+    
+    public static let shared = CoreManager()
+    
+    private init(){}
     
     // MARK: - Core Data stack
-    
     var context: NSManagedObjectContext {
         return persistentContainer.viewContext
     }
@@ -29,7 +32,45 @@ class CoreManager {
     }()
     
     
+    // MARK: Save File image
+    func saveContent(_ path:String,_ isVideo:Bool){
+        let entity = NSEntityDescription.entity(forEntityName: "Content", in: context)!
+        
+        let image = Content(entity: entity , insertInto: context)
+        image.isVideo = false
+        image.path = path
+        saveContext()
+        print("saved file")
+        
+    }
     
+    func loadAllContent() -> [Content]{
+        print("loaded all content from core manager")
+        let fetchRequest = NSFetchRequest<Content>(entityName: "Content")
+        //var media:[Content] = []
+        do {
+            let media = try context.fetch(fetchRequest)
+            return media
+        }catch{
+            print(error.localizedDescription)
+            return []
+        }
+    }
+    
+    func deleteAllContent(){
+        print("deleting all content")
+        let fetchRequest = NSFetchRequest<Content>(entityName: "Content")
+        do {
+            let media = try context.fetch(fetchRequest)
+            for file in media {
+                context.delete(file)
+            }
+            saveContext()
+        }catch{
+            print(error.localizedDescription)
+            
+        }
+    }
     
 
     // MARK: - Core Data Saving support

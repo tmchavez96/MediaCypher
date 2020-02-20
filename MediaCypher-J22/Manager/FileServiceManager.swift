@@ -12,7 +12,7 @@ import Foundation
 struct FileServiceManager {
     
     //MARK: SAVE
-    static func save(_ data: Data) {
+    static func save(_ data: Data, _ isVideo:Bool) {
         
         let path = String(data.hashValue)
         guard let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent(path) else { return }
@@ -20,10 +20,12 @@ struct FileServiceManager {
         do {
             try data.write(to: url)
             print("Saved Data to Disk: \(url)")
+            CoreManager.shared.saveContent(path,isVideo)
         } catch {
             print(error.localizedDescription)
             return
         }
+        
     }
     
     
@@ -39,4 +41,7 @@ struct FileServiceManager {
         return URL(fileURLWithPath: url).appendingPathComponent(path)
     }
     
+    static func loadAllContent() -> [Content]{
+        return CoreManager.shared.loadAllContent()
+    }
 }

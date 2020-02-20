@@ -16,7 +16,16 @@ class HomeCollectionCell: UICollectionViewCell {
     
     var content: Content! {
         didSet {
-            //TODO: Get Image
+            if(!content.isVideo){
+                guard let url  = FileServiceManager.load(content.path!) else {return}
+                
+                do{
+                    let data =  try Data(contentsOf: url)
+                    homeImage.image = UIImage(data: data)
+                }catch{
+                    print(error.localizedDescription)
+                }
+            }
         }
     }
 }

@@ -15,9 +15,9 @@ class HomeViewController: UIViewController {
     let viewModel = ViewModel()
     let imagePicker = UIImagePickerController()
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
+        viewModel.delegate = self
     }
     
     @IBAction func cameraButtonTapped(_ sender: UIBarButtonItem) {
@@ -76,11 +76,25 @@ extension HomeViewController: UIImagePickerControllerDelegate, UINavigationContr
         case true:
             break
         case false:
+            self.showAlert("Nice!", "You have saved an image")
             guard let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage,
                 let imageData = image.pngData() else { return }
-            //TODO: Save CoreData Entity
-            FileServiceManager.save(imageData)
+            FileServiceManager.save(imageData,false)
+            viewModel.reloadContent()
+            
+            self.dismiss(animated: true) {
+                return
+            }
         }
     }
     
+}
+
+
+extension HomeViewController: mediaDelegate{
+    func updateUI(){
+        DispatchQueue.main.async {
+            self.homeCollectionView.reloadData()
+        }
+    }
 }
